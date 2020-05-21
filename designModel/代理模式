@@ -1,0 +1,59 @@
+Java中常见的代理模式的三种实现方式有：自己实现的基于接口的代理，也可以使用基于JVM的代理，还可以使用Cglib来实现代理。
+
+1. 自己实现代理模式就可以首先定义接口，让被代理类和代理都去实现这个接口，然后将被代理类注入到代理类中，最终实现代理。
+```java 
+/**
+ * 定义功能接口
+ */
+public interface Function {
+    //每个具体实现类必须要实现的方法
+    public void myfunction();
+}
+
+/**
+ * 具体功能实现类，实现了系统的登录功能
+ */
+public class LoginFunction implements Function {
+    @Override
+    public void myfunction() {
+        System.out.println("登录系统成功！");
+        //登录系统
+    }
+}
+
+/**
+ * 代理类，可以拓展被代理类的功能，比如可以进行登录统计，登录拦截和验证，日志等功能
+ */
+public class Proxy implements Function{
+    private Function function;
+
+    //在创建代理类时，将被代理类指定注入
+    public Proxy(Function function) {
+        this.function = function;
+    }
+
+    @Override
+    public void myfunction() {
+        //验权
+        System.out.println("登录验证");
+        function.myfunction();
+        //日志
+        System.out.println("有人登录");
+        
+    }
+}
+public class Main {
+    public static void main(String[]args){
+        //生成被代理类，只要是实现function接口的类就行
+        LoginFunction loginFunction=new LoginFunction();
+        //代理拓展，为被代理类拓展功能
+        Proxy proxy=new Proxy(loginFunction);
+        proxy.myfunction();
+    }
+}
+```
+以上是基于接口简单实现的代理模式，这种模式有缺点，需要为每个接口都维护一个代理类，接口过多，则会使工作的复杂度急剧提升。
+
+2.使用JDK的
+
+3.使用Cglib
