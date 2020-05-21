@@ -1,0 +1,29 @@
+```java
+public class Packsack {
+
+	public static void main(String[] args) {
+		int[]w=new int[] {1,2,4};//物品对应的重量
+		int []v=new int[] {1,2,3};//物品对应的价值
+		int n=3;//物品个数
+		int cap=6;//背包容量
+		System.out.println(dynamicPlanning(w, v, n, cap));
+	}
+    //还有可优化空间，即每次只使用前一列的数据，可重复利用空间
+	public static int dynamicPlanning(int[]w,int[]v,int n,int cap) {
+		//定义dp数组，dp[i][t]的含义是在容量为t时，选择放前i件物品能够获得的最大值
+		int[][]dp=new int[n+1][cap+1];
+		for(int i=1;i<=n;i++) {
+			for(int t=1;t<=cap;t++) {
+				if(t<w[i-1]) {//判断是否越界，越界即容量不够放下第i件物品，则最大价值只有一个
+					dp[i][t]=dp[i-1][t];
+					continue;
+				}
+				//对第i件物品，有两种选择，放下或者不放，判断两者中的最大值，即为能够放下的最大价值
+				//当选择放下时，即背包的容量需要减少，t-w[i-1]就是背包放下第i件物品后剩余的容量，然后根据这个容量去找到前i-1个物品的最大价值，然后加上自身的价值
+				dp[i][t]=Math.max(dp[i-1][t], dp[i-1][t-w[i-1]]+v[i-1]);
+			}
+		}
+		return dp[n][cap];
+	}
+}
+```
