@@ -1,0 +1,57 @@
+单例模式实现在整个系统中只有一个对象实例，主要用户重量级对象，频繁创建和消除的对象，用以节省系统资源。
+```java
+//饿汉式单例模式
+//即在类被加载的时候就将实例创建出来，但类的加载有可能是不被我们控制的，即实例有可能在我们并不需要他的时候就被加载了，造成了内存的浪费
+//优点：没有线程问题，方便编码，简单易理解
+public class Singleton{
+    private Singleton(){
+    }   
+    private final static Singleton singleton=new Singleton();
+    public static Singleton getSingleton(){
+        return singleton;
+    }
+}
+
+//懒汉式单例模式，即在需要的时候才去加载这个实例，而不是提前去加载
+//双重校验加锁的方式保证多线程情况下也只有一个单例，就是new语句只会被执行一次
+//volatile是防止指令重排，比如新建一个实例主要分为三个步骤，分配内存空间，初始化，将实例赋给引用类型，
+//在指令重排时，可能将第三步分配在第二步之前，导致singleton是引用了一个未初始化的实例，若此时另一个线
+//程占用CPU，并执行这个方法，则他就能够在同步代码块之外就判断不为空，并获取到这个未初始化的实例，产生不可预知的错误
+//但是这种模式下可以通过反射来创建新的实例
+public class Singleton{
+    private Singleton(){
+    }   
+    private static volatile  Singleton singleton;
+    public static Singleton getSingleton(){
+        if(singleton==null){
+            synchronized (Singleton.class){
+                if(singleton==null){
+                    singleton=new Singleton();
+                }
+            }
+        }
+        return singleton;
+    }
+}
+//静态内部类实现单例模式
+//外部类的加载并不会导致静态内部类的加载，只有当使用到的时候，才会去加载静态内部类
+public class Singleton{
+    private Singleton(){
+    }
+    private static class SingletonInstance{
+        public final static Singleton INSTANCE=new Singleton();
+    }
+    public static Singleton getSingleton(){
+        return SingletonInstance.INSTANCE;
+    }
+}
+
+//枚举实现单例
+//实现简单，而且可以解决反射创建第二个实例的问题，同时创建的时候是线程安全的
+enum Singleton{
+    INSTANCE;//属性
+
+    Singleton(){
+    }
+}
+```
