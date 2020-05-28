@@ -1,0 +1,35 @@
+题目描述：给定一个整数数组 A，返回其中元素之和可被 K 整除的（连续、非空）子数组的数目。
+
+```java
+class Solution {
+    /**
+	 * 解题思路：首先是记录所有的前缀和，假设为p，则子数组i-t的和可以表示为p[t]-p[i]，然后
+	 * 我们需要判断子数组的和能否被整除，即(p[t]-p[i])%K==0是否为真，然后根据同余定理，当
+	 * p[t]%K==p[i]%k为真时，即子数组能够被整除，所以在这里我们可以利用map存下一个余数在前
+	 * 面的前缀和的余数以及出现的次数，然后每次计算后判断是否出现过这个余数，则只需要遍历一次
+	 * 就能够将所有的数组统计出来。
+	 * @param A
+	 * @param K
+	 * @return
+	 */
+    public int subarraysDivByK(int[] A, int K) {
+       Map<Integer,Integer>map=new HashMap<Integer, Integer>();//记录前缀和求模后的余数
+        map.put(0,1);//初始化一个余数为0的情况
+        int sum=0;//记录前缀和
+        int count=0;//记录出现整除的次数
+        int m;//记录每次前缀和取模后的值
+        Integer r;//负责获取从map中读取的值
+        for(int i=0;i<A.length;i++){
+            sum=sum+A[i];
+            m=(sum%K+K)%K;//特殊处理前缀和为负数的情况，保证m是一个正值，方便计算
+            if((r=map.get(m))==null){
+                map.put(m,1);
+            }else{
+            	map.put(m, r+1);
+                count=count+r;
+            }
+        }
+        return count;
+    }
+}
+```

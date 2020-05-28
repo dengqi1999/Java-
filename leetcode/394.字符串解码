@@ -1,0 +1,40 @@
+题目描述：
+给定一个经过编码的字符串，返回它解码后的字符串。
+编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入.
+```java
+class Solution {
+    /**
+     * 采用两个栈来保存对应的数字以及字符串，每次遇见数字则将数字保存，遇见[则将之前保存的数字以及字符串压栈，并新建字符串，遇见]则进行字符串的重复生成，并弹出数字栈和字符串栈
+     */    
+    public String decodeString(String s) {
+        StringBuilder builder=new StringBuilder();//储存方括号里的字符串，每次遇见数字都新建一个
+		StringBuilder number=new StringBuilder();//用来储存数字，数字可能有好几个字符，
+		Stack<Integer>numStack=new Stack<Integer>();//储存每次得到的数组
+		Stack<StringBuilder>stringStack=new Stack<StringBuilder>();//储存方括号对应的字符
+		for(int i=0;i<s.length();i++) {
+			if(Character.isDigit(s.charAt(i))) {//遇见数字时就将数字储存起来
+				number.append(s.charAt(i));
+			}else if(s.charAt(i)=='['){//因为数字总是表示重复的次数，所以数字与左方括号一起出现，当遇到左方括号，则进行压栈的操作
+				numStack.push(Integer.valueOf(number.toString()));
+				stringStack.push(builder);
+				builder=new StringBuilder();
+				number.setLength(0);
+			}else if(s.charAt(i)==']') {//结束标志，循环生成字符
+				int count=numStack.pop();
+                //根据需要循环的次数循环字符串
+				for(int t=0;t<count;t++) {
+                    //这里不需要弹出栈顶
+					stringStack.peek().append(builder);
+				}
+				//切换字符串
+				builder=stringStack.pop();
+			}else {//添加字符
+				builder.append(s.charAt(i));
+			}
+		}
+		return builder.toString();
+    }
+}
+```
